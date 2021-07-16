@@ -1,17 +1,50 @@
-import sys
 
+import numpy as np
+import pandas as pd
+from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
-    pass
 
+    """
+    Load Data: Receives the path to the messages and categories files, and return a dataframe, with after joining the data.    
+    """
+    
+    messages = pd.read_csv(messages_filepath)
+    categories = pd.read_csv(categories_filepath)
+    df = pd.merge(messages,categories,on='id')
+    return df 
 
 def clean_data(df):
-    pass
+    """
+    Clean Data Function: Slit the categories column into multiple columns, remove duplicates and drop nulls.
+    """
+    aux_categories= df['categories'].str.split(';')[0]
+    lista = []
+    for item in aux_categories:
+        lista.append(item.split('-')[0])
+    categories = df['categories'].str.split(';', expand = True)
+    categories.columns = lista
 
+    for column in categories:
+    # set each value to be the last character of the string
+        categories[column] = categories[column].str[-1:]
+    
+    # convert column from string to numeric
+        categories[column] = categories[column].astype(int)
+
+    df = df.drop('categories', axis = 1)
+    df = pd.concat([df, categories], axis = 1)
+    df = df.drop_duplicates()
+    df = df[df['offer'].isnull()==False]
+    return df
 
 def save_data(df, database_filename):
-    pass  
-
+    """
+    Save the dataframe in a convenient path
+    """
+    engine = create_engine('sqlite:///'+ database_filename)
+    df.to_sql('df', engine, index=False)
+      
 
 def main():
     if len(sys.argv) == 4:
