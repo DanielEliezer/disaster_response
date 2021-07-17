@@ -4,6 +4,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 import re
 import nltk
+import os
+nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('averaged_perceptron_tagger') # download for lemmatization
@@ -17,6 +19,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.metrics import classification_report
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.model_selection import GridSearchCV
+from sklearn.base import BaseEstimator,TransformerMixin
 import pickle
 
 
@@ -50,14 +53,15 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 def load_data(database_filepath):
 
     engine = create_engine('sqlite:///' + database_filepath)
-    table_name = os.path.basename(database_filepath).replace(".db","") + "_table"
+    table_name = 'Disasters'#os.path.basename(database_filepath).replace(".db","") + "_table"
     df = pd.read_sql_table(table_name,engine)
     df = df.drop(['child_alone'],axis=1)
     df['related'] = df['related'].map(lambda x: 1 if x == 2 else x)    
     X = df['message']
     Y = df.iloc[:,4:]
+    category_names = Y.columns
+    return X, Y, category_names
 
-    return X, Y
     #print(y.columns)
     #category_names = y.columns # This will be used for visualization purpose
     #return X, y, category_names
@@ -93,7 +97,7 @@ def build_model():
 
 
 
-def evaluate_model(model, X_test, Y_test, category_names):
+def evaluate_model(model, X_test, y_test, category_names):
     y_pred = model.predict(X_test)
     class_report = classification_report(y_test, y_pred, target_names=category_names)
     print(class_report)  
@@ -109,16 +113,16 @@ def main():
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
         
         print('Building model...')
         model = build_model()
         
         print('Training model...')
-        model.fit(X_train, Y_train)
+        model.fit(X_train, y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test, category_names)
+        evaluate_model(model, X_test, y_test, category_names)
 
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
         save_model(model, model_filepath)

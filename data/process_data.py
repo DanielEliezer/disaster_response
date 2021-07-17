@@ -1,4 +1,4 @@
-
+import sys
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
@@ -43,7 +43,7 @@ def save_data(df, database_filename):
     Save the dataframe in a convenient path
     """
     engine = create_engine('sqlite:///'+ database_filename)
-    df.to_sql('df', engine, index=False)
+    df.to_sql('Disasters', engine, index=False)
       
 
 def main():
