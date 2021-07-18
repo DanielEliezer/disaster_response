@@ -22,8 +22,9 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.base import BaseEstimator,TransformerMixin
 import pickle
 
-
-# Build a custom transformer which will extract the starting verb of a sentence
+################################################################################################################
+# A lot of the classed and functions bellow were based on the classes from the Udacity Data Sciente Nanodegree #
+################################################################################################################
 class StartingVerbExtractor(BaseEstimator, TransformerMixin):
     """
     Create Verb Extractor class: Creates a new feature, bases on the starting verb of the sentence
@@ -38,7 +39,7 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
                 return True
         return False
 
-    def fit(self, X, y=None):
+    def fit(self, x, y=None):
         return self
 
     def transform(self, X):
@@ -56,7 +57,7 @@ def load_data(database_filepath):
     df = pd.read_sql_table(table_name,engine)
     
     # fix the 'related' field
-    df['related'] = df['related'].map(lambda x: 1 if x == 2 else x)    
+    df.loc[df['related']== 2, 'related'] = 1
     
     # create X,Y and category_names
 
@@ -86,14 +87,26 @@ def build_model():
     """Return a grid search model, with a pipeline that normalize, lemmatize, tokenize, and apply TF-IDF"""
 
     pipeline = Pipeline([
-        ('vect', CountVectorizer(tokenizer=tokenize)),
-        ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier()))
+        ('features', FeatureUnion([
+
+            ('text_pipeline', Pipeline([
+                ('vect', CountVectorizer(tokenizer=tokenize)),
+                ('tfidf', TfidfTransformer())
+            ])),
+
+            ('starting_verb', StartingVerbExtractor())
+        ])),
+
+        ('clf', RandomForestClassifier())
     ])
+
     parameters = {
-        'clf__estimator__min_samples_split': [2, 4, 6],
-        'clf__estimator__max_features': ['auto', 'sqrt', 'log2'],
-        'vect__ngram_range': [(1, 1),(1,2)]}
+        'features__text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
+        'clf__min_samples_split': [2, 4, 6],
+        'clf__max_features': ['auto', 'sqrt', 'log2']
+        
+    }
+
     model = GridSearchCV(pipeline, param_grid=parameters, scoring='f1_macro', cv=2, n_jobs=-1,verbose=10)
 
     return model
