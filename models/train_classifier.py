@@ -48,16 +48,14 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
 
 def load_data(database_filepath):
-    """
+    """cd app
     Get the data from the 'Disasters' table, fix the 'related' field, and split the data into X and Y to feed to the ML model 
     """
     # import data from database
     engine = create_engine('sqlite:///' + database_filepath)
     table_name = 'Disasters'
     df = pd.read_sql_table(table_name,engine)
-    
-    # fix the 'related' field
-    df.loc[df['related']== 2, 'related'] = 1
+
     
     # create X,Y and category_names
 
