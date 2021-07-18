@@ -86,26 +86,16 @@ def build_model():
     """Return a grid search model, with a pipeline that normalize, lemmatize, tokenize, and apply TF-IDF"""
 
     pipeline = Pipeline([
-        ('features', FeatureUnion([
-
-            ('text_pipeline', Pipeline([
-                ('vect', CountVectorizer(tokenizer=tokenize)),
-                ('tfidf', TfidfTransformer())
-            ])),
-
-            ('starting_verb', StartingVerbExtractor())
-        ])),
-
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
-
     parameters = {
         'clf__estimator__min_samples_split': [2, 4, 6],
         'clf__estimator__max_features': ['auto', 'sqrt', 'log2'],
-        'vect__ngram_range': [(1, 1),(1,2)]
-    }
+        'vect__ngram_range': [(1, 1),(1,2)]}
     model = GridSearchCV(pipeline, param_grid=parameters, scoring='f1_macro', cv=2, n_jobs=-1,verbose=10)
-    
+
     return model
 
 
@@ -120,15 +110,19 @@ def evaluate_model(model, X_test, y_test, category_names):
 
 
 def save_model(model, model_filepath):    
-"""
-Save the model to a picke file
-"""
+    """Save the model to a picke file """
 
     with open(model_filepath, 'wb') as file:
         pickle.dump(model, file)
 
 
 def main():
+    """
+    Load the data from the database, build, train, evaluate and save the model
+    """
+
+
+
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
