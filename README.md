@@ -18,19 +18,19 @@ Python 3, Pandas, Numpy, Plotly, NLTK, SKLEARN, Sqlalchemy, Flask
 **Files Description:**
 
 DISASTER_RESPONSE
-  |-- app
-        |-- templates
-                |-- go.html
-                |-- master.html
-        |-- run.py
-  |-- data
-        |-- disaster_message.csv
-        |-- disaster_categories.csv
-        |-- DisasterResponse.db
-        |-- process_data.py
-  |-- models
-        |-- train_classifier.py
-  |-- README
+  |-- app<br/>
+        |-- templates <br/>
+                |-- go.html <br/>
+                |-- master.html <br/>
+        |-- run.py <br/>
+  |-- data <br/>
+        |-- disaster_message.csv <br/>
+        |-- disaster_categories.csv <br/>
+        |-- DisasterResponse.db <br/>
+        |-- process_data.py <br/>
+  |-- models <br/>
+        |-- train_classifier.py <br/>
+  |-- README <br/>
 
 • The app folder is reponsible for deploying the model to the web, with flask.
 • The data folder contains the original csv files, the database and the script to clean and process the data.  
