@@ -38,6 +38,9 @@ def clean_data(df):
     df = pd.concat([df, categories], axis = 1)
     df = df.drop_duplicates()
     df = df[df['offer'].isnull()==False]
+        
+    # fix the 'related' field
+    df.loc[df['related']== 2, 'related'] = 1
     return df
 
 def save_data(df, database_filename):
@@ -45,7 +48,7 @@ def save_data(df, database_filename):
     Save the dataframe in a convenient path
     """
     engine = create_engine('sqlite:///'+ database_filename)
-    df.to_sql('Disasters', engine, index=False)
+    df.to_sql('Disasters', engine, index=False, if_exists='replace')
       
 
 def main():
