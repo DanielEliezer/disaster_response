@@ -6,7 +6,7 @@ When there is a big disaster, a lot of messages in the web starts to surface. It
 
 In this project, we have a lot of disaster-related data from Figure Eight, and the goal is to build a Machine Learning Model that processes the messages from the web, and classifies it between some categories (e.g. people asking for medical aid, asking for food, reporting road blocks, etc).
 
-To do so, we are going to use some NLP techniques (e.g. TF-IDF, tokenize, normalize and lemmatize) with the nltk library, and deploy the project in a web app (flask).
+To do so, we are going to use some NLP techniques (e.g. TF-IDF, tokenize, normalize and lemmatize) with the nltk library, combined with a machine learning model and deploy the project in a web app (flask).
 
 This project is part of the Udacity Data Science Nanodegree Program.
 
