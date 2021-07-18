@@ -27,8 +27,9 @@ Python 3, Pandas, Numpy, Plotly, NLTK, SKLEARN, Sqlalchemy, Flask
 
 1) Clone this repository from my github to your machine
 2) Make sure you have python 3 and all the libraries installed
-3) Type 'python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl' in the terminal
-4) From your terminal, go to the app folder and type "python run.py"
-5) Copy the link that appeared, and paste it to your internet browser.
+3) Type 'python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db' in the terminal
+4) Type 'python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl' in the terminal
+5) From your terminal, go to the app folder and type "python run.py"
+6) Copy the link that appeared, and paste it to your internet browser.
 
 There you go! You can see some charts about the Figure Eight data, or you can insert a text, and the model will try to make the classification. 
