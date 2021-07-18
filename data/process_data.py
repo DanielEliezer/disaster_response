@@ -16,22 +16,24 @@ def load_data(messages_filepath, categories_filepath):
 
 def clean_data(df):
     """
-    Clean Data Function: Slit the categories column into multiple columns, remove duplicates and drop nulls.
+    Clean Data Function: Split the categories column into multiple columns, remove duplicates and drop nulls.
     """
+    # get the name of the categories, to rename the dataframe columns
     aux_categories= df['categories'].str.split(';')[0]
     lista = []
     for item in aux_categories:
         lista.append(item.split('-')[0])
+
+    # create a separated dataframe, with the categories results 
     categories = df['categories'].str.split(';', expand = True)
     categories.columns = lista
 
-    for column in categories:
     # set each value to be the last character of the string
+    for column in categories:
         categories[column] = categories[column].str[-1:]
-    
-    # convert column from string to numeric
         categories[column] = categories[column].astype(int)
 
+    # join the new dataframe with the old one, drop nulls and duplicates
     df = df.drop('categories', axis = 1)
     df = pd.concat([df, categories], axis = 1)
     df = df.drop_duplicates()

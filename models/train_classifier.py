@@ -26,10 +26,7 @@ import pickle
 # Build a custom transformer which will extract the starting verb of a sentence
 class StartingVerbExtractor(BaseEstimator, TransformerMixin):
     """
-    Starting Verb Extractor class
-    
-    This class extract the starting verb of a sentence,
-    creating a new feature for the ML classifier
+    Create Verb Extractor class: Creates a new feature, bases on the starting verb of the sentence
     """
 
     def starting_verb(self, text):
@@ -41,7 +38,6 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
                 return True
         return False
 
-    # Given it is a tranformer we can return the self 
     def fit(self, X, y=None):
         return self
 
@@ -51,22 +47,29 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
 
 def load_data(database_filepath):
-
+    """
+    Get the data from the 'Disasters' table, fix the 'related' field, and split the data into X and Y to feed to the ML model 
+    """
+    # import data from database
     engine = create_engine('sqlite:///' + database_filepath)
-    table_name = 'Disasters'#os.path.basename(database_filepath).replace(".db","") + "_table"
+    table_name = 'Disasters'
     df = pd.read_sql_table(table_name,engine)
-    df = df.drop(['child_alone'],axis=1)
+    
+    # fix the 'related' field
     df['related'] = df['related'].map(lambda x: 1 if x == 2 else x)    
+    
+    # create X,Y and category_names
+
     X = df['message']
     Y = df.iloc[:,4:]
     category_names = Y.columns
     return X, Y, category_names
 
-    #print(y.columns)
-    #category_names = y.columns # This will be used for visualization purpose
-    #return X, y, category_names
 
 def tokenize(text):
+    ''' 
+    Normalize, lemmatize, and tokenize a text received.
+    '''
 
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
@@ -80,12 +83,22 @@ def tokenize(text):
 
 
 def build_model():
+    """Return a grid search model, with a pipeline that normalize, lemmatize, tokenize, and apply TF-IDF"""
+
     pipeline = Pipeline([
-        ('vect', CountVectorizer(tokenizer=tokenize)),
-        ('tfidf', TfidfTransformer()),
+        ('features', FeatureUnion([
+
+            ('text_pipeline', Pipeline([
+                ('vect', CountVectorizer(tokenizer=tokenize)),
+                ('tfidf', TfidfTransformer())
+            ])),
+
+            ('starting_verb', StartingVerbExtractor())
+        ])),
+
         ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
-    # parameters set to this due to reduce the size of pkl file, which were too large (600MB) for uploading to github with my previous parameters.
+
     parameters = {
         'clf__estimator__min_samples_split': [2, 4, 6],
         'clf__estimator__max_features': ['auto', 'sqrt', 'log2'],
@@ -98,12 +111,19 @@ def build_model():
 
 
 def evaluate_model(model, X_test, y_test, category_names):
+    """
+    Applies a ML pipeline to the test set and reports the performance (accuracy, test, recall, f1)
+    """
     y_pred = model.predict(X_test)
     class_report = classification_report(y_test, y_pred, target_names=category_names)
     print(class_report)  
 
-def save_model(model, model_filepath):
-    
+
+def save_model(model, model_filepath):    
+"""
+Save the model to a picke file
+"""
+
     with open(model_filepath, 'wb') as file:
         pickle.dump(model, file)
 
