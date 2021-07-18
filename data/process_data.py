@@ -49,6 +49,11 @@ def save_data(df, database_filename):
       
 
 def main():
+    """
+    Load the data, split the categories column into multiple columns, remove duplicates, drop nulls, and save the result in a database
+    """
+
+
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
