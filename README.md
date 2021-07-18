@@ -1,6 +1,6 @@
 # disaster_response
 
-Introduction
+**Introduction**
 
 When there is a big disaster, a lot of messages in the web starts to surface. It's a very hard job to filter the messages of people asking for help, offering help, and providing useful information, from the messages that are just reverberating the news. For the autorithies and companies that tries to help the victims somehow, it's really important to understand quickly the nature of the message, so that more people can be helped as fast as possible.
 
@@ -11,11 +11,11 @@ To do so, we are going to use some NLP techniques (e.g. TF-IDF, tokenize, normal
 This project is part of the Udacity Data Science Nanodegree Program.
 
 
-Requirements:
+**Requirements:**
 
 Python 3, Pandas, Numpy, Plotly, NLTK, SKLEARN, Sqlalchemy, Flask
 
-Files Description:
+**Files Description:**
 
 DISASTER_RESPONSE
   |-- app
@@ -29,19 +29,19 @@ DISASTER_RESPONSE
         |-- DisasterResponse.db
         |-- process_data.py
   |-- models
-        |-- classifier.pkl
         |-- train_classifier.py
   |-- README
 
-A) The app folder is reponsible for deploying the model to the web, with flask.
-B) The data folder contains the original csv files, the database and the script to clean and process the data.  
-C) The models folder contains the script of the ML model, and the model saved as a pkl file.
+• The app folder is reponsible for deploying the model to the web, with flask.
+• The data folder contains the original csv files, the database and the script to clean and process the data.  
+• The models folder contains the script of the ML model.
 
-Running the project:
+**Running the project:**
 
 1) Clone this repository from my github to your machine
 2) Make sure you have python 3 and all the libraries installed
-3) From your terminal, write "python run.py"
-4) Copy the link that appeared, and paste it to your internet browser.
+3) Type 'python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl' in the terminal
+4) From your terminal, go to the app folder and type "python run.py"
+5) Copy the link that appeared, and paste it to your internet browser.
 
 There you go! You can see some charts about the Figure Eight data, or you can insert a text, and the model will try to make the classification. 
