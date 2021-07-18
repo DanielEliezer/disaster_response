@@ -4,7 +4,6 @@ import pandas as pd
 import sys
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
@@ -15,6 +14,7 @@ import joblib
 app = Flask(__name__)
 
 def tokenize(text):
+    ''' Normalize, lemmatize, and tokenize a text received. '''
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -26,7 +26,6 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-#engine = create_engine('sqlite:///../data/disaster_response_db.db')
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('Disasters', engine)
 
@@ -48,8 +47,7 @@ def index():
     cat_counts = df_cat_count.values
     cat_names = df_cat_count.index
     
-    # create visuals
-    # TODO: Below is an example - modify to create your own visuals
+
     graphs = [
             # GRAPH 1 - genre graph
         {
