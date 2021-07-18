@@ -2,6 +2,7 @@ import json
 import plotly
 import pandas as pd
 import sys
+import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from flask import Flask
@@ -10,7 +11,7 @@ from plotly.graph_objs import Bar
 #from sklearn.externals import joblib
 from sqlalchemy import create_engine
 import joblib
-
+from sklearn.base import BaseEstimator,TransformerMixin
 app = Flask(__name__)
 
 def tokenize(text):
@@ -24,6 +25,26 @@ def tokenize(text):
         clean_tokens.append(clean_tok)
 
     return clean_tokens
+class StartingVerbExtractor(BaseEstimator, TransformerMixin):
+    """
+    Create Verb Extractor class: Creates a new feature, bases on the starting verb of the sentence
+    """
+
+    def starting_verb(self, text):
+        sentence_list = nltk.sent_tokenize(text)
+        for sentence in sentence_list:
+            pos_tags = nltk.pos_tag(tokenize(sentence))
+            first_word, first_tag = pos_tags[0]
+            if first_tag in ['VB', 'VBP'] or first_word == 'RT':
+                return True
+        return False
+
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, X):
+        X_tagged = pd.Series(X).apply(self.starting_verb)
+        return pd.DataFrame(X_tagged)
 
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
@@ -78,13 +99,13 @@ def index():
             ],
 
             'layout': {
-                'title': 'Distribution of Message Categories',
+                'title': 'Count of Message Categories',
                 'yaxis': {
-                    'title': "Count"
+                    'title': "Count of Messages"
                 },
                 'xaxis': {
                     'title': "Category",
-                    'tickangle': 35
+                    'tickangle': 45
                 }
             }
         }
